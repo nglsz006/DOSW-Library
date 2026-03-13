@@ -1,4 +1,4 @@
 package edu.eci.dosw.tdd.service;
 
-public class LibraryService {
+public class BookService {
 }
