@@ -2,10 +2,6 @@ package edu.eci.dosw.tdd.core.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Utilidad para generar IDs únicos autoincrementales.
- * Patrón Singleton para garantizar unicidad global de IDs.
- */
 public class IdGeneratorUtil {
 
     private static final IdGeneratorUtil INSTANCE = new IdGeneratorUtil();
@@ -27,9 +23,6 @@ public class IdGeneratorUtil {
         return userCounter.incrementAndGet();
     }
 
-    /**
-     * Reinicia los contadores (útil para tests).
-     */
     public void reset() {
         bookCounter.set(0);
         userCounter.set(0);

@@ -1,8 +1,5 @@
 package edu.eci.dosw.tdd.core.util;
 
-/**
- * Utilidad general de validaciones reutilizables.
- */
 public class ValidationUtil {
 
     private ValidationUtil() {

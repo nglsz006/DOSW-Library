@@ -3,9 +3,7 @@ package edu.eci.dosw.tdd.core.util;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Utilidad para manejo de fechas en formato ISO (yyyy-MM-dd).
- */
+
 public class DateUtil {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
