@@ -1,4 +1,10 @@
 package edu.eci.dosw.tdd.core.exception;
 
-public class UserNotFoundException {
+/**
+ * Excepción lanzada cuando no se encuentra un usuario en el sistema.
+ */
+public class UserNotFoundException extends Exception {
+    public UserNotFoundException(String message) {
+        super(message);
+    }
 }

@@ -1,4 +1,10 @@
 package edu.eci.dosw.tdd.core.exception;
 
-public class LoanLimitExceededException {
+/**
+ * Excepción lanzada cuando un usuario excede el límite de préstamos activos.
+ */
+public class LoanLimitExceededException extends Exception {
+    public LoanLimitExceededException(String message) {
+        super(message);
+    }
 }
