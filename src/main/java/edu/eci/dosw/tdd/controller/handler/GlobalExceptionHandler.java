@@ -3,15 +3,18 @@ package edu.eci.dosw.tdd.controller.handler;
 import edu.eci.dosw.tdd.core.exception.BookNotAvialableException;
 import edu.eci.dosw.tdd.core.exception.LoanLimitExceededException;
 import edu.eci.dosw.tdd.core.exception.UserNotFoundException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,6 +37,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        return buildErrorResponse("Acceso denegado: " + ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+        return buildErrorResponse("No autenticado: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Map<String, Object>> handleExpiredJwt(ExpiredJwtException ex) {
+        return buildErrorResponse("Token expirado", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidJwtSignature(SignatureException ex) {
+        return buildErrorResponse("Firma del token inválida", HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
