@@ -2,11 +2,14 @@ package edu.eci.dosw.tdd.core.service;
 
 import edu.eci.dosw.tdd.core.exception.UserNotFoundException;
 import edu.eci.dosw.tdd.core.model.User;
-import edu.eci.dosw.tdd.core.util.IdGeneratorUtil;
 import edu.eci.dosw.tdd.core.validators.UserValidator;
+import edu.eci.dosw.tdd.persistence.entity.UserEntity;
+import edu.eci.dosw.tdd.persistence.mapper.UserPersistenceMapper;
+import edu.eci.dosw.tdd.persistence.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,33 +17,49 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private final List<User> users = new ArrayList<>();
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    public User registerUser(String name) {
-        User user = new User(name, IdGeneratorUtil.getInstance().generateUserId());
+    @Transactional
+    public User registerUser(String name, String username, String password, String role) {
+        User user = new User();
+        user.setName(name);
         UserValidator.validate(user);
-        users.add(user);
-        return user;
+
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("El username '" + username + "' ya está en uso");
+        }
+
+        UserEntity entity = UserEntity.builder()
+                .name(name)
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .role(role)
+                .build();
+
+        UserEntity saved = userRepository.save(entity);
+        return UserPersistenceMapper.toDomain(saved);
     }
 
     public List<User> getAllUsers() {
-        return users.stream()
+        return userRepository.findAll().stream()
+                .map(UserPersistenceMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
-    public Optional<User> getUserById(int id) {
-        return users.stream()
-                .filter(user -> user.getId() == id)
-                .findFirst();
-    }
-
-    public User findUserById(int id) throws UserNotFoundException {
-        return getUserById(id)
+    public User findUserById(Long id) throws UserNotFoundException {
+        return userRepository.findById(id)
+                .map(UserPersistenceMapper::toDomain)
                 .orElseThrow(() -> new UserNotFoundException("No se encontró el usuario con ID: " + id));
     }
 
-    public void clear() {
-        users.clear();
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(UserPersistenceMapper::toDomain);
     }
 }

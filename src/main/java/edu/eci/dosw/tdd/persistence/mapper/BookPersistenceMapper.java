@@ -8,19 +8,19 @@ public class BookPersistenceMapper {
     private BookPersistenceMapper() {}
 
     public static Book toDomain(BookEntity entity) {
-        return new Book(
-                entity.getTitle(),
-                entity.getAuthor(),
-                entity.getId().intValue(),
-                entity.getAvailableCopies() > 0
-        );
+        Book book = new Book(entity.getTitle(), entity.getAuthor(), entity.getId());
+        book.setTotalCopies(entity.getTotalCopies());
+        book.setAvailableCopies(entity.getAvailableCopies());
+        return book;
     }
 
     public static BookEntity toEntity(Book book) {
         return BookEntity.builder()
-                .id((long) book.getId())
+                .id(book.getId())
                 .title(book.getTitle())
                 .author(book.getAuthor())
+                .totalCopies(book.getTotalCopies())
+                .availableCopies(book.getAvailableCopies())
                 .build();
     }
 }

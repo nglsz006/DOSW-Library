@@ -25,14 +25,14 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<LoanDTO> createLoan(@RequestParam int userId, @RequestParam int bookId)
+    public ResponseEntity<LoanDTO> createLoan(@RequestParam Long userId, @RequestParam Long bookId)
             throws UserNotFoundException, BookNotAvialableException, LoanLimitExceededException {
         Loan loan = loanService.createLoan(userId, bookId);
         return new ResponseEntity<>(LoanMapper.toDTO(loan), HttpStatus.CREATED);
     }
 
     @PostMapping("/return")
-    public ResponseEntity<LoanDTO> returnBook(@RequestParam int userId, @RequestParam int bookId)
+    public ResponseEntity<LoanDTO> returnBook(@RequestParam Long userId, @RequestParam Long bookId)
             throws BookNotAvialableException, UserNotFoundException {
         Loan loan = loanService.returnBook(userId, bookId);
         return ResponseEntity.ok(LoanMapper.toDTO(loan));
@@ -55,7 +55,7 @@ public class LoanController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LoanDTO>> getLoansByUser(@PathVariable int userId) {
+    public ResponseEntity<List<LoanDTO>> getLoansByUser(@PathVariable Long userId) {
         List<LoanDTO> loans = loanService.getLoansByUserId(userId).stream()
                 .map(LoanMapper::toDTO)
                 .collect(Collectors.toList());

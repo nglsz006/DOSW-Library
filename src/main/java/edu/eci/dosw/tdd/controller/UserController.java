@@ -1,6 +1,7 @@
 package edu.eci.dosw.tdd.controller;
 
 import edu.eci.dosw.tdd.controller.dto.UserDTO;
+import edu.eci.dosw.tdd.controller.dto.UserRegistrationDTO;
 import edu.eci.dosw.tdd.controller.mapper.UserMapper;
 import edu.eci.dosw.tdd.core.exception.UserNotFoundException;
 import edu.eci.dosw.tdd.core.model.User;
@@ -23,8 +24,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
-        User user = userService.registerUser(userDTO.getName());
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserRegistrationDTO registrationDTO) {
+        User user = userService.registerUser(
+                registrationDTO.getName(), registrationDTO.getUsername(), registrationDTO.getPassword(), "ROLE_USER");
         return new ResponseEntity<>(UserMapper.toDTO(user), HttpStatus.CREATED);
     }
 
@@ -37,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable int id) throws UserNotFoundException {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) throws UserNotFoundException {
         User user = userService.findUserById(id);
         return ResponseEntity.ok(UserMapper.toDTO(user));
     }

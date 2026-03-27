@@ -23,8 +23,8 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO) {
-        Book book = bookService.addBook(bookDTO.getTitle(), bookDTO.getAuthor());
+    public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO) throws BookNotAvialableException {
+        Book book = bookService.addBook(bookDTO.getTitle(), bookDTO.getAuthor(), bookDTO.getTotalCopies());
         return new ResponseEntity<>(BookMapper.toDTO(book), HttpStatus.CREATED);
     }
 
@@ -37,16 +37,16 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDTO> getBookById(@PathVariable int id) throws BookNotAvialableException {
+    public ResponseEntity<BookDTO> getBookById(@PathVariable Long id) throws BookNotAvialableException {
         Book book = bookService.getBookById(id)
                 .orElseThrow(() -> new BookNotAvialableException("No se encontró el libro con ID: " + id));
         return ResponseEntity.ok(BookMapper.toDTO(book));
     }
 
-    @PatchMapping("/{id}/availability")
-    public ResponseEntity<Void> updateAvailability(@PathVariable int id, @RequestParam boolean available)
+    @PutMapping("/{id}/stock")
+    public ResponseEntity<BookDTO> updateBookStock(@PathVariable Long id, @RequestParam int totalCopies)
             throws BookNotAvialableException {
-        bookService.updateBookAvailability(id, available);
-        return ResponseEntity.ok().build();
+        Book book = bookService.updateBookStock(id, totalCopies);
+        return ResponseEntity.ok(BookMapper.toDTO(book));
     }
 }

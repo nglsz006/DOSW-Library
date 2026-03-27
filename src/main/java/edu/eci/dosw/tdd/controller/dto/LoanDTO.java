@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanDTO {
-    private int bookId;
+    private Long bookId;
     private String bookTitle;
-    private int userId;
+    private Long userId;
     private String userName;
     private String loanDate;
     private String returnDate;
