@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 public class Book {
     private String title;
     private String author;
-    private int id;
-    private boolean available;
+    private Long id;
+    private int totalCopies;
+    private int availableCopies;
 
-    public Book(String title, String author, int id) {
+    public Book(String title, String author, Long id) {
         this.title = title;
         this.author = author;
         this.id = id;
-        this.available = true;
     }
 }

@@ -2,102 +2,96 @@ package edu.eci.dosw.tdd.core.service;
 
 import edu.eci.dosw.tdd.core.exception.BookNotAvialableException;
 import edu.eci.dosw.tdd.core.model.Book;
-import edu.eci.dosw.tdd.core.util.IdGeneratorUtil;
 import edu.eci.dosw.tdd.core.validators.BookValidator;
+import edu.eci.dosw.tdd.persistence.entity.BookEntity;
+import edu.eci.dosw.tdd.persistence.mapper.BookPersistenceMapper;
+import edu.eci.dosw.tdd.persistence.repository.BookRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Servicio para gestionar libros de la biblioteca.
- * Usa un Map<Book, Integer> para almacenar el libro y la cantidad de ejemplares.
- * Operaciones básicas implementadas con Streams.
- * Patrón Singleton gestionado por Spring (@Service).
- */
 @Service
 public class BookService {
 
-    private final Map<Book, Integer> bookCatalog = new HashMap<>();
+    private final BookRepository bookRepository;
 
-    /**
-     * Agrega un libro al catálogo. Si ya existe, incrementa la cantidad de ejemplares.
-     */
-    public Book addBook(String title, String author) {
-        Book book = new Book(title, author, IdGeneratorUtil.getInstance().generateBookId());
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    @Transactional
+    public Book addBook(String title, String author, int totalCopies) {
+        Book book = new Book(title, author, null);
         BookValidator.validate(book);
 
-        // Buscar si ya existe un libro con el mismo título y autor usando stream
-        Optional<Book> existing = bookCatalog.keySet().stream()
-                .filter(b -> b.getTitle().equalsIgnoreCase(title) && b.getAuthor().equalsIgnoreCase(author))
-                .findFirst();
+        BookEntity entity = BookEntity.builder()
+                .title(title)
+                .author(author)
+                .totalCopies(totalCopies)
+                .availableCopies(totalCopies)
+                .build();
 
-        if (existing.isPresent()) {
-            bookCatalog.merge(existing.get(), 1, Integer::sum);
-            return existing.get();
+        BookEntity saved = bookRepository.save(entity);
+        return BookPersistenceMapper.toDomain(saved);
+    }
+
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll().stream()
+                .map(BookPersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Book> getBookById(Long id) {
+        return bookRepository.findById(id)
+                .map(BookPersistenceMapper::toDomain);
+    }
+
+    public List<Book> getAvailableBooks() {
+        return bookRepository.findByAvailableCopiesGreaterThan(0).stream()
+                .map(BookPersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Book updateBookStock(Long bookId, int totalCopies) throws BookNotAvialableException {
+        if (totalCopies <= 0) {
+            throw new IllegalArgumentException("totalCopies debe ser mayor que 0");
+        }
+        BookEntity entity = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotAvialableException("No se encontró el libro con ID: " + bookId));
+
+        int borrowed = entity.getTotalCopies() - entity.getAvailableCopies();
+        if (totalCopies < borrowed) {
+            throw new IllegalArgumentException("totalCopies no puede ser menor que las copias actualmente prestadas: " + borrowed);
         }
 
-        bookCatalog.put(book, 1);
-        return book;
+        entity.setTotalCopies(totalCopies);
+        entity.setAvailableCopies(totalCopies - borrowed);
+        return BookPersistenceMapper.toDomain(bookRepository.save(entity));
     }
 
-    /**
-     * Obtener todos los libros del catálogo usando stream.
-     */
-    public List<Book> getAllBooks() {
-        return bookCatalog.keySet().stream()
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Obtener un libro por su ID usando stream.
-     */
-    public Optional<Book> getBookById(int id) {
-        return bookCatalog.keySet().stream()
-                .filter(book -> book.getId() == id)
-                .findFirst();
-    }
-
-    /**
-     * Actualizar la disponibilidad de un libro.
-     */
-    public void updateBookAvailability(int bookId, boolean available) throws BookNotAvialableException {
-        Book book = getBookById(bookId)
+    @Transactional
+    public void decrementAvailableCopies(Long bookId) throws BookNotAvialableException {
+        BookEntity entity = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotAvialableException("No se encontró el libro con ID: " + bookId));
-        book.setAvailable(available);
+        if (entity.getAvailableCopies() == 0) {
+            throw new BookNotAvialableException("El libro no tiene copias disponibles");
+        }
+        entity.setAvailableCopies(entity.getAvailableCopies() - 1);
+        bookRepository.save(entity);
     }
 
-    /**
-     * Obtener la cantidad de ejemplares de un libro.
-     */
-    public int getBookCopies(int bookId) {
-        return bookCatalog.entrySet().stream()
-                .filter(entry -> entry.getKey().getId() == bookId)
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(0);
-    }
-
-    /**
-     * Obtener libros disponibles usando stream.
-     */
-    public List<Book> getAvailableBooks() {
-        return bookCatalog.keySet().stream()
-                .filter(Book::isAvailable)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Limpiar catálogo (útil para tests).
-     */
-    public void clear() {
-        bookCatalog.clear();
-    }
-
-    /**
-     * Obtener el mapa completo de libros y ejemplares.
-     */
-    public Map<Book, Integer> getBookCatalog() {
-        return Collections.unmodifiableMap(bookCatalog);
+    @Transactional
+    public void incrementAvailableCopies(Long bookId) throws BookNotAvialableException {
+        BookEntity entity = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotAvialableException("No se encontró el libro con ID: " + bookId));
+        if (entity.getAvailableCopies() >= entity.getTotalCopies()) {
+            throw new BookNotAvialableException("No se puede incrementar: availableCopies ya es igual a totalCopies");
+        }
+        entity.setAvailableCopies(entity.getAvailableCopies() + 1);
+        bookRepository.save(entity);
     }
 }

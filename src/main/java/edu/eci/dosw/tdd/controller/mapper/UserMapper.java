@@ -9,10 +9,15 @@ public class UserMapper {
     }
 
     public static UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(), user.getName());
+        return new UserDTO(user.getId(), user.getName(), user.getUsername(), user.getRole());
     }
 
     public static User toModel(UserDTO dto) {
-        return new User(dto.getName(), dto.getId());
+        User user = new User();
+        user.setId(dto.getId());
+        user.setName(dto.getName());
+        user.setUsername(dto.getUsername());
+        user.setRole(dto.getRole());
+        return user;
     }
 }

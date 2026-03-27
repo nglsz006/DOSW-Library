@@ -8,13 +8,20 @@ public class UserPersistenceMapper {
     private UserPersistenceMapper() {}
 
     public static User toDomain(UserEntity entity) {
-        return new User(entity.getName(), entity.getId().intValue());
+        User user = new User();
+        user.setId(entity.getId());
+        user.setName(entity.getName());
+        user.setUsername(entity.getUsername());
+        user.setRole(entity.getRole());
+        return user;
     }
 
     public static UserEntity toEntity(User user) {
         return UserEntity.builder()
-                .id((long) user.getId())
+                .id(user.getId())
                 .name(user.getName())
+                .username(user.getUsername())
+                .role(user.getRole())
                 .build();
     }
 }
