@@ -19,5 +19,9 @@ springdoc:
   swagger-ui:
     enabled: true
 
+jwt:
+  secret: dG9kb3NMb3NTZWNyZXRvc1NvbkJhc2U2NEVuY29kZWRLZXlGb3JKV1QyMDI1
+  expiration: 86400000
+
 server:
   port: 8080
