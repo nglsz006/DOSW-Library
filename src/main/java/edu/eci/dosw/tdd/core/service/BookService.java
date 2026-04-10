@@ -3,9 +3,9 @@ package edu.eci.dosw.tdd.core.service;
 import edu.eci.dosw.tdd.core.exception.BookNotAvialableException;
 import edu.eci.dosw.tdd.core.model.Book;
 import edu.eci.dosw.tdd.core.validators.BookValidator;
-import edu.eci.dosw.tdd.persistence.entity.BookEntity;
-import edu.eci.dosw.tdd.persistence.mapper.BookPersistenceMapper;
-import edu.eci.dosw.tdd.persistence.repository.BookRepository;
+import edu.eci.dosw.tdd.persistence.relational.entity.BookEntity;
+import edu.eci.dosw.tdd.persistence.relational.mapper.BookPersistenceMapper;
+import edu.eci.dosw.tdd.persistence.relational.repository.JpaBookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 @Service
 public class BookService {
 
-    private final BookRepository bookRepository;
+    private final JpaBookRepository bookRepository;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(JpaBookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 

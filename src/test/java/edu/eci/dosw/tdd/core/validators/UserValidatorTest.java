@@ -9,7 +9,7 @@ class UserValidatorTest {
 
     @Test
     void shouldPassValidationForValidUser() {
-        User user = new User("Nombre", 1);
+        User user = new User(1L, "Nombre", null, null);
         assertDoesNotThrow(() -> UserValidator.validate(user));
     }
 
@@ -20,13 +20,13 @@ class UserValidatorTest {
 
     @Test
     void shouldThrowExceptionForEmptyName() {
-        User user = new User("", 1);
+        User user = new User(1L, "", null, null);
         assertThrows(IllegalArgumentException.class, () -> UserValidator.validate(user));
     }
 
     @Test
     void shouldThrowExceptionForBlankName() {
-        User user = new User("   ", 1);
+        User user = new User(1L, "   ", null, null);
         assertThrows(IllegalArgumentException.class, () -> UserValidator.validate(user));
     }
 }

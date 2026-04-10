@@ -5,13 +5,13 @@ import edu.eci.dosw.tdd.core.exception.LoanLimitExceededException;
 import edu.eci.dosw.tdd.core.exception.UserNotFoundException;
 import edu.eci.dosw.tdd.core.model.Loan;
 import edu.eci.dosw.tdd.core.validators.LoanValidator;
-import edu.eci.dosw.tdd.persistence.entity.BookEntity;
-import edu.eci.dosw.tdd.persistence.entity.LoanEntity;
-import edu.eci.dosw.tdd.persistence.entity.UserEntity;
-import edu.eci.dosw.tdd.persistence.mapper.LoanPersistenceMapper;
-import edu.eci.dosw.tdd.persistence.repository.BookRepository;
-import edu.eci.dosw.tdd.persistence.repository.LoanRepository;
-import edu.eci.dosw.tdd.persistence.repository.UserRepository;
+import edu.eci.dosw.tdd.persistence.relational.entity.BookEntity;
+import edu.eci.dosw.tdd.persistence.relational.entity.LoanEntity;
+import edu.eci.dosw.tdd.persistence.relational.entity.UserEntity;
+import edu.eci.dosw.tdd.persistence.relational.mapper.LoanPersistenceMapper;
+import edu.eci.dosw.tdd.persistence.relational.repository.JpaBookRepository;
+import edu.eci.dosw.tdd.persistence.relational.repository.JpaLoanRepository;
+import edu.eci.dosw.tdd.persistence.relational.repository.JpaUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +25,13 @@ public class LoanService {
     private static final int MAX_ACTIVE_LOANS_PER_USER = 3;
     private static final int LOAN_DAYS = 14;
 
-    private final LoanRepository loanRepository;
-    private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final JpaLoanRepository loanRepository;
+    private final JpaBookRepository bookRepository;
+    private final JpaUserRepository userRepository;
     private final BookService bookService;
 
-    public LoanService(LoanRepository loanRepository, BookRepository bookRepository,
-                       UserRepository userRepository, BookService bookService) {
+    public LoanService(JpaLoanRepository loanRepository, JpaBookRepository bookRepository,
+                       JpaUserRepository userRepository, BookService bookService) {
         this.loanRepository = loanRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
@@ -95,12 +95,14 @@ public class LoanService {
         return LoanPersistenceMapper.toDomain(loanEntity);
     }
 
+    @Transactional(readOnly = true)
     public List<Loan> getAllLoans() {
         return loanRepository.findAll().stream()
                 .map(LoanPersistenceMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Loan> getActiveLoans() {
         return loanRepository.findAll().stream()
                 .filter(loan -> Loan.STATUS_ACTIVE.equals(loan.getStatus()))
@@ -108,6 +110,7 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Loan> getLoansByUserId(Long userId) {
         return loanRepository.findByUserId(userId).stream()
                 .map(LoanPersistenceMapper::toDomain)

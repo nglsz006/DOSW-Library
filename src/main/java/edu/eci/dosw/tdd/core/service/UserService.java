@@ -3,9 +3,9 @@ package edu.eci.dosw.tdd.core.service;
 import edu.eci.dosw.tdd.core.exception.UserNotFoundException;
 import edu.eci.dosw.tdd.core.model.User;
 import edu.eci.dosw.tdd.core.validators.UserValidator;
-import edu.eci.dosw.tdd.persistence.entity.UserEntity;
-import edu.eci.dosw.tdd.persistence.mapper.UserPersistenceMapper;
-import edu.eci.dosw.tdd.persistence.repository.UserRepository;
+import edu.eci.dosw.tdd.persistence.relational.entity.UserEntity;
+import edu.eci.dosw.tdd.persistence.relational.mapper.UserPersistenceMapper;
+import edu.eci.dosw.tdd.persistence.relational.repository.JpaUserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final JpaUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(JpaUserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }

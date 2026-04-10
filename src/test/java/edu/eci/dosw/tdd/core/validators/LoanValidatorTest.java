@@ -11,7 +11,7 @@ class LoanValidatorTest {
 
     @Test
     void shouldPassValidationForValidLoan() {
-        Loan loan = new Loan(new Book("T", "A", 1), new User("N", 1),
+        Loan loan = new Loan(new Book("T", "A", 1L), new User(1L, "N", null, null),
                 "2025-01-01", "2025-01-15", Loan.STATUS_ACTIVE);
         assertDoesNotThrow(() -> LoanValidator.validate(loan));
     }
@@ -23,13 +23,13 @@ class LoanValidatorTest {
 
     @Test
     void shouldThrowExceptionForLoanWithNullBook() {
-        Loan loan = new Loan(null, new User("N", 1), "2025-01-01", "2025-01-15", Loan.STATUS_ACTIVE);
+        Loan loan = new Loan(null, new User(1L, "N", null, null), "2025-01-01", "2025-01-15", Loan.STATUS_ACTIVE);
         assertThrows(IllegalArgumentException.class, () -> LoanValidator.validate(loan));
     }
 
     @Test
     void shouldThrowExceptionForLoanWithNullUser() {
-        Loan loan = new Loan(new Book("T", "A", 1), null, "2025-01-01", "2025-01-15", Loan.STATUS_ACTIVE);
+        Loan loan = new Loan(new Book("T", "A", 1L), null, "2025-01-01", "2025-01-15", Loan.STATUS_ACTIVE);
         assertThrows(IllegalArgumentException.class, () -> LoanValidator.validate(loan));
     }
 }
