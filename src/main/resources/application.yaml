@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/dosw_library
     username: postgres
-    password: postgres
+    password: 1234
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -30,3 +30,9 @@ server:
     key-store-password: changeit
     key-store-type: PKCS12
     key-alias: dosw-library
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/dosw_library
+      database: dosw_library

@@ -5,6 +5,7 @@ import edu.eci.dosw.tdd.controller.mapper.BookMapper;
 import edu.eci.dosw.tdd.core.exception.BookNotAvialableException;
 import edu.eci.dosw.tdd.core.model.Book;
 import edu.eci.dosw.tdd.core.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +26,7 @@ public class BookController {
 
     @PostMapping
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO) throws BookNotAvialableException {
+    public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookDTO bookDTO) throws BookNotAvialableException {
         Book book = bookService.addBook(bookDTO.getTitle(), bookDTO.getAuthor(), bookDTO.getTotalCopies());
         return new ResponseEntity<>(BookMapper.toDTO(book), HttpStatus.CREATED);
     }

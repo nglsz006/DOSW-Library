@@ -6,6 +6,7 @@ import edu.eci.dosw.tdd.controller.mapper.UserMapper;
 import edu.eci.dosw.tdd.core.exception.UserNotFoundException;
 import edu.eci.dosw.tdd.core.model.User;
 import edu.eci.dosw.tdd.core.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +27,7 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public ResponseEntity<UserDTO> registerUser(@RequestBody UserRegistrationDTO registrationDTO) {
+    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         String role = registrationDTO.getRole() != null ? registrationDTO.getRole() : "USER";
         User user = userService.registerUser(
                 registrationDTO.getName(), registrationDTO.getUsername(), registrationDTO.getPassword(), role);

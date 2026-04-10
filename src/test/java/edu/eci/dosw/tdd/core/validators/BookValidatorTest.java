@@ -9,7 +9,7 @@ class BookValidatorTest {
 
     @Test
     void shouldPassValidationForValidBook() {
-        Book book = new Book("Título", "Autor", 1);
+        Book book = new Book("Título", "Autor", 1L);
         assertDoesNotThrow(() -> BookValidator.validate(book));
     }
 
@@ -20,13 +20,13 @@ class BookValidatorTest {
 
     @Test
     void shouldThrowExceptionForEmptyTitle() {
-        Book book = new Book("", "Autor", 1);
+        Book book = new Book("", "Autor", 1L);
         assertThrows(IllegalArgumentException.class, () -> BookValidator.validate(book));
     }
 
     @Test
     void shouldThrowExceptionForNullAuthor() {
-        Book book = new Book("Título", null, 1);
+        Book book = new Book("Título", null, 1L);
         assertThrows(IllegalArgumentException.class, () -> BookValidator.validate(book));
     }
 }

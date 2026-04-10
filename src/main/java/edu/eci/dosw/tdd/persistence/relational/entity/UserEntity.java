@@ -1,7 +1,9 @@
-package edu.eci.dosw.tdd.persistence.entity;
+package edu.eci.dosw.tdd.persistence.relational.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
@@ -26,4 +28,13 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String role;
+
+    @Column(nullable = true)
+    private String email;
+
+    @Column(nullable = true)
+    private String membershipType;
+
+    @Column(nullable = true)
+    private LocalDate registrationDate;
 }

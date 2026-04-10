@@ -1,8 +1,11 @@
-package edu.eci.dosw.tdd.persistence.entity;
+package edu.eci.dosw.tdd.persistence.relational.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "loans")
@@ -31,4 +34,9 @@ public class LoanEntity {
 
     @Column(nullable = false)
     private String status;
+
+    @ElementCollection
+    @CollectionTable(name = "loan_history", joinColumns = @JoinColumn(name = "loan_id"))
+    @Builder.Default
+    private List<LoanHistoryEmbeddable> history = new ArrayList<>();
 }

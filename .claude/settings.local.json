@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn test:*)",
+      "Bash(mvn compile:*)",
+      "Bash(mvn test-compile:*)",
+      "Bash(jar tf:*)",
+      "Bash(grep \"class$\")",
+      "Bash(mkdir -p /c/Users/nglsz/DOSW-Library/src/main/java/edu/eci/dosw/tdd/persistence/relational/entity)",
+      "Bash(mkdir -p /c/Users/nglsz/DOSW-Library/src/main/java/edu/eci/dosw/tdd/persistence/relational/mapper)",
+      "Bash(mkdir -p /c/Users/nglsz/DOSW-Library/src/main/java/edu/eci/dosw/tdd/persistence/relational/repository)",
+      "Bash(mkdir -p /c/Users/nglsz/DOSW-Library/src/main/java/edu/eci/dosw/tdd/persistence/nonrelational/document)",
+      "Bash(mkdir -p /c/Users/nglsz/DOSW-Library/src/main/java/edu/eci/dosw/tdd/persistence/nonrelational/mapper)"
+    ]
+  }
+}
